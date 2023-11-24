@@ -1,8 +1,8 @@
-package com.bharath.todo_listapp.usecases
+package com.bharath.todo_listapp.domain.usecases
 
-import com.bharath.todo_listapp.data.database.Repository
-import com.bharath.todo_listapp.data.entity.TodoEntity
 import com.bharath.todo_listapp.data.other.Resource
+import com.bharath.todo_listapp.domain.entity.TodoEntity
+import com.bharath.todo_listapp.domain.repository.Repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -21,6 +21,7 @@ class CreateUseCase @Inject constructor(
     }
 
 }
+
 class UpdateUseCase @Inject constructor(
     private val repository: Repository,
 ) {
@@ -34,6 +35,7 @@ class UpdateUseCase @Inject constructor(
     }
 
 }
+
 class DeleteUseCase @Inject constructor(
     private val repository: Repository,
 ) {

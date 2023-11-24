@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.bharath.todo_listapp.data.entity.TodoEntity
+import com.bharath.todo_listapp.domain.entity.TodoEntity
 import kotlinx.coroutines.flow.Flow
 
 
@@ -25,9 +25,9 @@ interface TodoDao {
     suspend fun update(todoEntity: TodoEntity)
 
 
-    @Query(
-        "select * from TodoApp "
-    )
+    @Query("select * from TodoEntity ")
     fun getAllTodos(): Flow<List<TodoEntity>>
 
+    @Query("SELECT * FROM TodoEntity WHERE Id =:id")
+    fun getTodoById(id: Int): Flow<TodoEntity>
 }

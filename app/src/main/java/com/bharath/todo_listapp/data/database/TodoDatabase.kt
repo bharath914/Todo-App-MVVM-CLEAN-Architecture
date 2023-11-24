@@ -2,7 +2,7 @@ package com.bharath.todo_listapp.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.bharath.todo_listapp.data.entity.TodoEntity
+import com.bharath.todo_listapp.domain.entity.TodoEntity
 
 
 @Database(

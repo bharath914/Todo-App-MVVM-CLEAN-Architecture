@@ -1,19 +1,13 @@
 package com.bharath.todo_listapp.data.database
 
-import com.bharath.todo_listapp.data.entity.TodoEntity
+import com.bharath.todo_listapp.domain.entity.TodoEntity
+import com.bharath.todo_listapp.domain.repository.Repository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-
-interface Repository {
-
-    suspend fun InsertTodo(todoEntity: TodoEntity)
-    suspend fun delete(todoEntity: TodoEntity)
-    suspend fun update(todoEntity: TodoEntity)
-    suspend fun getAllTodos(): Flow<List<TodoEntity>>
-}
 
 class Repositoryimpl @Inject constructor(
     private val dao: TodoDao,
@@ -39,6 +33,12 @@ class Repositoryimpl @Inject constructor(
     override suspend fun getAllTodos(): Flow<List<TodoEntity>> {
         return withContext(Dispatchers.IO) {
             dao.getAllTodos()
+        }
+    }
+
+    override suspend fun getTodoById(id: Int): Flow<TodoEntity> {
+        return withContext(IO) {
+            dao.getTodoById(id)
         }
     }
 

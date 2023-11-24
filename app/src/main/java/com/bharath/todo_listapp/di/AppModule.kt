@@ -4,9 +4,10 @@ package com.bharath.todo_listapp.di
 import android.app.Application
 import androidx.room.Room
 import com.bharath.todo_listapp.data.database.DbCons
-import com.bharath.todo_listapp.data.database.Repository
 import com.bharath.todo_listapp.data.database.Repositoryimpl
 import com.bharath.todo_listapp.data.database.TodoDatabase
+import com.bharath.todo_listapp.domain.repository.Repository
+
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

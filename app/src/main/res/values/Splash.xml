@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="My.App.Splashscreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/todologo</item>
+        <item name="postSplashScreenTheme">@style/Theme.ToDoListApp</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+    </style>
+</resources>
