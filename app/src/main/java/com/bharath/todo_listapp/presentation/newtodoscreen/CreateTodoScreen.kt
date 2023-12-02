@@ -1,6 +1,5 @@
 package com.bharath.todo_listapp.presentation.newtodoscreen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -19,10 +18,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,10 +39,6 @@ fun CreateTodoScreen(
     padd: PaddingValues,
 ) {
     val viewModel = hiltViewModel<CrudViewModel>()
-
-    LaunchedEffect(key1 = true, block = {
-        viewModel.getNote()
-    })
     CreateTodoContent(
         navHostController = navHostController,
         viewModel = viewModel,
@@ -61,46 +57,55 @@ private fun CreateTodoContent(
 
     ) {
 
+    val context = LocalContext.current
 
 
     val note = viewModel.todo.collectAsStateWithLifecycle()
 
 
-    var title = viewModel.title.collectAsStateWithLifecycle()
+    val title = viewModel.title.collectAsStateWithLifecycle()
 
-    var description = viewModel.description.collectAsStateWithLifecycle()
+    val description = viewModel.description.collectAsStateWithLifecycle()
+
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
 
 
 
     Scaffold(
         modifier = Modifier.padding(padd),
         topBar = {
-            EditScreenTopBar(onclickOnSave = {
-                viewModel.onEvent(
-                    Event.OnSaveOnNote(
-                        TodoEntity(
-                            title = title.value,
-                            description = description.value,
+            EditScreenTopBar(
+                onclickOnSave = {
+                    viewModel.onEvent(
+                        Event.OnSaveOnNote(
+                            TodoEntity(
+                                title = title.value,
+                                description = description.value,
 //                            isCompleted = note.value.isCompleted
+                            )
                         )
                     )
-                )
 
-                navHostController.navigateUp()
+                    navHostController.navigateUp()
 
-            }, {
-                viewModel.onEvent(
-                    Event.OnBackButtonPressed(
-                        TodoEntity(
-                            title = title.value,
-                            description = description.value,
+                },
+                {
+                    viewModel.onEvent(
+                        Event.OnBackButtonPressed(
+                            TodoEntity(
+                                title = title.value,
+                                description = description.value,
 //                            isCompleted = note.value.isCompleted
+                            )
                         )
                     )
-                )
-                navHostController.navigateUp()
-            }
+                    navHostController.navigateUp()
+                },
             )
+
         }
     ) { paddingValues ->
 

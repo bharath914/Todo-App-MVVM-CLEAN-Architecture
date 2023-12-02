@@ -1,6 +1,7 @@
 package com.bharath.todo_listapp.presentation.newtodoscreen
 
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
 import com.bharath.todo_listapp.presentation.newtodoscreen.events.Create_Edit_Events as Event
 
@@ -28,7 +32,9 @@ class CrudViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val getTodoUseCase: GetTodoUseCase,
 
+
     ) : ViewModel() {
+
 
     private val _title = MutableStateFlow("")
     val title = _title.asStateFlow()
@@ -41,58 +47,56 @@ class CrudViewModel @Inject constructor(
     val todo = _todo.asStateFlow()
 
     private var deletedNote: TodoEntity? = null
-    var isNewNote: Boolean = false
+    private var isNewNote: Boolean = false
 
 
-    fun getNote() {
+    private fun getDate(): String {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+
+        return dateFormat.format(calendar.time)
+    }
+
+    private fun getTime(): String {
+        val time = Calendar.getInstance()
+        val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        return timeFormat.format(time.time)
+    }
+
+    init {
+        isNewNote = getNote()
+    }
+
+    private fun getNote(): Boolean {
         savedStateHandle.get<String>("Id")?.let {
-            if (it.isNotBlank() && it.isNotEmpty() && !it.isNullOrEmpty()) {
-
+            if (it.isNotBlank() && it.isNotEmpty()) {
+                Log.d("Crud", "getNote:$it ")
                 getNoteWithId(it.toInt())
+                return false
             }
         }
-        if (savedStateHandle.get<String>("Id") == null) {
-            isNewNote = true
-        }
+        return true
     }
 
     fun onEvent(event: Event) {
 
         when (event) {
             is Event.OnSaveOnNote -> {
-                viewModelScope.launch(IO) {
-                    if (isNewNote) {
-                        if (_title.value.isNotEmpty() && _description.value.isNotEmpty()) {
-                            insertIntoDb(
-                                TodoEntity(
-                                    title = _title.value,
-                                    description = _description.value
-                                )
-                            )
-                        }
-                    } else {
-                        insertIntoDb(_todo.value)
 
-                    }
+                if (!isNewNote) {
+                    updateFun()
+                } else {
+                    insertFun()
                 }
+
             }
 
             is Event.OnBackButtonPressed -> {
-                viewModelScope.launch(IO) {
+                if (!isNewNote) {
+                    updateFun()
+                } else {
 
-                    if (isNewNote) {
-
-                        if (_title.value.isNotEmpty() && _description.value.isNotEmpty()) {
-                            insertIntoDb(
-                                TodoEntity(
-                                    title = _title.value,
-                                    description = _description.value
-                                )
-                            )
-                        }
-                    } else {
-                        insertIntoDb(_todo.value)
-                    }
+                    insertFun()
                 }
             }
 
@@ -123,11 +127,41 @@ class CrudViewModel @Inject constructor(
     }
 
 
-    private suspend fun insertIntoDb(entity: TodoEntity) {
+    private fun insertIntoDb(entity: TodoEntity) {
 
-        createUseCase(entity)
+        viewModelScope.launch(IO) {
+
+            createUseCase(entity)
+        }
 
 
+    }
+
+    private fun insertFun() {
+        if (_title.value.isNotEmpty()) {
+            insertIntoDb(
+                TodoEntity(
+                    title = _title.value,
+                    description = _description.value,
+                    time = getTime(),
+                    date = getDate()
+                )
+            )
+        }else{
+
+        }
+    }
+
+    private fun updateFun() {
+        val note = TodoEntity(
+            id = _todo.value.id,
+            title = _title.value,
+            description = _description.value,
+            isCompleted = _todo.value.isCompleted,
+            time = getTime(),
+            date = getDate()
+        )
+        update(note)
     }
 
     private fun update(entity: TodoEntity) {

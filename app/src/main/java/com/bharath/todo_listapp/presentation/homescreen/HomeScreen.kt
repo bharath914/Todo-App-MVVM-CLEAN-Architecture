@@ -1,5 +1,6 @@
 package com.bharath.todo_listapp.presentation.homescreen
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -35,6 +36,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -43,6 +48,7 @@ import com.bharath.todo_listapp.presentation.homescreen.components.NotesCard
 import com.bharath.todo_listapp.presentation.homescreen.events.HomeEvents
 import com.bharath.todo_listapp.presentation.navigation.NavConst
 import ir.kaaveh.sdpcompose.sdp
+import ir.kaaveh.sdpcompose.ssp
 
 
 @Composable
@@ -107,7 +113,9 @@ private fun HomeContent(
         floatingActionButtonPosition = FabPosition.Center,
     ) { innerpad ->
         Column(
-            modifier = Modifier.padding(innerpad),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerpad),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -122,8 +130,25 @@ private fun HomeContent(
             val listOfTodos = viewModel.todoItems.collectAsStateWithLifecycle()
 
 
+
             Search(viewModel = viewModel, modifier = cardmod, navHostController = navHostController)
             Spacer(modifier = Modifier.height(15.sdp))
+            if (listOfTodos.value.isEmpty()) {
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "\" Create Something New ✒️ \"",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 25.ssp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(25.sdp)
+                            .fillMaxWidth(),
+                        lineHeight = TextUnit(50f, type = TextUnitType.Sp)
+                    )
+                }
+
+            }
             LazyColumn(content = {
 
                 items(listOfTodos.value) {
